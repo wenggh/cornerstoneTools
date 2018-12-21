@@ -58,7 +58,7 @@ export default function (context, eventData, targetElement, referenceElement) {
     return;
   }
 
-  const color = toolColors.getActiveColor();
+  const color = toolColors.getReferenceActiveColor();
 
   // Draw the referenceLines
   context.setTransform(1, 0, 0, 1, 0, 0);
