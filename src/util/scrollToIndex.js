@@ -85,32 +85,38 @@ export default function (element, newImageIdIndex) {
   stackData.currentImageIdIndex = newImageIdIndex;
   const newImageId = stackData.imageIds[newImageIdIndex];
 
-  // Retry image loading in cases where previous image promise
-  // Was rejected, if the option is set
-  /*
-
-    Const config = stackScroll.getConfiguration();
-
-    TODO: Revisit this. It appears that Core's imageCache is not
-    keeping rejected promises anywhere, so we have no way to know
-    if something was previously rejected.
-
-    if (config && config.retryLoadOnScroll === true) {
-    }
-  */
-
-  // Convert the preventCache value in stack data to a boolean
-  const preventCache = Boolean(stackData.preventCache);
-
-  let imagePromise;
-
-  if (preventCache) {
-    imagePromise = cornerstone.loadImage(newImageId);
+  
+  triggerEvent(element, 'cornerstonebeforestackscroll', eventData);
+  if (typeof eventData.loadImage === 'function') {
+    eventData.loadImage(newImageId).then(doneCallback, failCallback)
   } else {
-    imagePromise = cornerstone.loadAndCacheImage(newImageId);
-  }
+    // Retry image loading in cases where previous image promise
+    // Was rejected, if the option is set
+    /*
 
-  imagePromise.then(doneCallback, failCallback);
+      Const config = stackScroll.getConfiguration();
+
+      TODO: Revisit this. It appears that Core's imageCache is not
+      keeping rejected promises anywhere, so we have no way to know
+      if something was previously rejected.
+
+      if (config && config.retryLoadOnScroll === true) {
+      }
+    */
+
+    // Convert the preventCache value in stack data to a boolean
+    const preventCache = Boolean(stackData.preventCache);
+
+    let imagePromise;
+
+    if (preventCache) {
+      imagePromise = cornerstone.loadImage(newImageId);
+    } else {
+      imagePromise = cornerstone.loadAndCacheImage(newImageId);
+    }
+
+    imagePromise.then(doneCallback, failCallback);
+  }
   // Make sure we kick off any changed download request pools
   requestPoolManager.startGrabbing();
 
