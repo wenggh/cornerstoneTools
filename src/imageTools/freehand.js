@@ -48,7 +48,9 @@ let configuration = {
   modifying: false,
   movingTextBox: false,
   currentHandle: 0,
-  currentTool: -1
+  currentTool: -1,
+  onStartDraw: null,
+  onEndDraw: null
 };
 
 /**
@@ -220,6 +222,12 @@ function startDrawing (eventData) {
   const toolData = getToolState(eventData.element, toolType);
 
   config.currentTool = toolData.data.length - 1;
+
+  if (typeof config.onStartDraw === 'function') {
+    config.onStartDraw({
+        data: toolData.data
+    })
+  }
 }
 
 /**
@@ -319,6 +327,9 @@ function endDrawing (eventData, handleNearby) {
   data.canComplete = false;
 
   external.cornerstone.updateImage(eventData.element);
+  if (typeof config.onEndDraw === 'function') {
+    config.onEndDraw()
+  }
 }
 
 /**
