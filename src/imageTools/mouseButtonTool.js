@@ -13,14 +13,20 @@ import triggerEvent from '../util/triggerEvent.js';
 import { getToolOptions, setToolOptions } from '../toolOptions.js';
 
 export default function (mouseToolInterface) {
-  let configuration = {};
+  let configuration = {
+    showText: true
+  };
   const toolType = mouseToolInterface.toolType;
 
   function mouseDownActivateCallback (e) {
     const eventData = e.detail;
     const element = eventData.element;
     const options = getToolOptions(toolType, element);
-
+    const startEvtData = {}
+    triggerEvent(element, 'cornerstone-annotation-start', startEvtData)
+    if (startEvtData.cancel === true) {
+        return
+    }
     if (!isMouseButtonEnabled(eventData.which, options.mouseButtonMask)) {
       return;
     }
@@ -228,6 +234,7 @@ export default function (mouseToolInterface) {
       }
 
       cornerstone.updateImage(element);
+      triggerEvent(element, 'cornerstone-annotation-end')
     }, preventHandleOutsideImage);
   }
 

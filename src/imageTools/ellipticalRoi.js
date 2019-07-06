@@ -248,10 +248,12 @@ function onImageRendered (e) {
         data.handles.textBox.y = (data.handles.start.y + data.handles.end.y) / 2;
       }
 
-      const text = textBoxText(data);
+      if (config.showText) {
+        const text = textBoxText(data);
 
-      drawLinkedTextBox(context, element, data.handles.textBox, text,
-        data.handles, textBoxAnchorPoints, color, lineWidth, 0, true);
+        drawLinkedTextBox(context, element, data.handles.textBox, text,
+            data.handles, textBoxAnchorPoints, color, lineWidth, 0, true);
+      }
     });
   }
 

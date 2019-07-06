@@ -49,8 +49,7 @@ let configuration = {
   movingTextBox: false,
   currentHandle: 0,
   currentTool: -1,
-  onStartDraw: null,
-  onEndDraw: null
+  showText: true
 };
 
 /**
@@ -183,7 +182,14 @@ function mouseDownActivateCallback (e) {
   if (eventData.event.shiftKey) {
     config.activePencilMode = true;
   }
-
+    const startEvtData = {}
+    triggerEvent(element, 'cornerstone-annotation-start', startEvtData)
+    if (startEvtData.cancel === true) {
+        return
+    }
+  if (config.onBeforeStartDraw && config.onBeforeStartDraw() === false) {
+      return
+  }
   startDrawing(eventData);
   addPoint(eventData);
 
@@ -222,12 +228,6 @@ function startDrawing (eventData) {
   const toolData = getToolState(eventData.element, toolType);
 
   config.currentTool = toolData.data.length - 1;
-
-  if (typeof config.onStartDraw === 'function') {
-    config.onStartDraw({
-        data: toolData.data
-    })
-  }
 }
 
 /**
@@ -327,9 +327,7 @@ function endDrawing (eventData, handleNearby) {
   data.canComplete = false;
 
   external.cornerstone.updateImage(eventData.element);
-  if (typeof config.onEndDraw === 'function') {
-    config.onEndDraw()
-  }
+  triggerEvent(eventData.element, 'cornerstone-annotation-end')
 }
 
 /**
@@ -967,10 +965,12 @@ function onImageRendered (e) {
           data.textBox.y = data.polyBoundingBox.top + data.polyBoundingBox.height / 2;
         }
 
-        const text = textBoxText(data);
+        if (configuration.showText) {
+            const text = textBoxText(data);
 
-        drawLinkedTextBox(context, element, data.textBox, text,
-          data.handles, textBoxAnchorPoints, color, lineWidth, 0, true);
+            drawLinkedTextBox(context, element, data.textBox, text,
+            data.handles, textBoxAnchorPoints, color, lineWidth, 0, true);
+        }
       }
     });
   }

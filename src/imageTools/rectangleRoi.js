@@ -256,19 +256,21 @@ function onImageRendered (e) {
         data.invalidated = false;
       }
 
-      const text = textBoxText(data);
+      if (config.showText) {
+        const text = textBoxText(data);
+        // If the textbox has not been moved by the user, it should be displayed on the right-most
+        // Side of the tool.
+        if (!data.handles.textBox.hasMoved) {
+            // Find the rightmost side of the ellipse at its vertical center, and place the textbox here
+            // Note that this calculates it in image coordinates
+            data.handles.textBox.x = Math.max(data.handles.start.x, data.handles.end.x);
+            data.handles.textBox.y = (data.handles.start.y + data.handles.end.y) / 2;
+        }
 
-      // If the textbox has not been moved by the user, it should be displayed on the right-most
-      // Side of the tool.
-      if (!data.handles.textBox.hasMoved) {
-        // Find the rightmost side of the ellipse at its vertical center, and place the textbox here
-        // Note that this calculates it in image coordinates
-        data.handles.textBox.x = Math.max(data.handles.start.x, data.handles.end.x);
-        data.handles.textBox.y = (data.handles.start.y + data.handles.end.y) / 2;
+        drawLinkedTextBox(context, element, data.handles.textBox, text,
+            data.handles, textBoxAnchorPoints, color, lineWidth, 0, true);
       }
 
-      drawLinkedTextBox(context, element, data.handles.textBox, text,
-        data.handles, textBoxAnchorPoints, color, lineWidth, 0, true);
     });
   }
 
