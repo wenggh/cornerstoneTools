@@ -24,6 +24,9 @@ export default function (synchronizer, sourceElement, targetElement) {
 
   const sourceImagePosition = convertToVector3(sourceImagePlane.imagePositionPatient);
   const stackToolDataSource = getToolState(targetElement, 'stack');
+  if(stackToolDataSource === undefined || stackToolDataSource.data === undefined){
+     return;
+  }
   const stackData = stackToolDataSource.data[0];
 
   let minDistance = Number.MAX_VALUE;
